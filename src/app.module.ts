@@ -1,21 +1,27 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { EventEntity } from './event/event.entity';
 import { MenuModule } from './menu/menu.module';
-import { Menu } from './menu/menu.entity';
 import { EventModule } from './event/event.module';
+import { ConfigModule } from '@nestjs/config';
+import ormConfig from 'config/orm.config';
+import ormConfigProd from 'config/orm.config.prod';
+import { SchoolModule } from './school/school.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'db/database.sqlite',
-      synchronize: true,
-      entities: [Menu, EventEntity],
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [ormConfig],
+      expandVariables: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory:
+        process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
     }),
     MenuModule,
     EventModule,
+    SchoolModule,
   ],
 })
 export class AppModule {}
