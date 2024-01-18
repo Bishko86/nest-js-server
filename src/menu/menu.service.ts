@@ -14,7 +14,7 @@ export class MenuService {
 
   async findAll(): Promise<Menu[]> {
     const menu = await this.menuRepository.find();
-    console.log(menu);
+
     return menu;
   }
 

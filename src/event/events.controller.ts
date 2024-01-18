@@ -3,33 +3,66 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  Logger,
+  NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { CreateEventDto } from './create-event.dto';
-import { UpdateEventDto } from './update-event.dto';
-import { EventEntity } from './event.entity';
+import { CreateEventDto } from './input/create-event.dto';
+import { UpdateEventDto } from './input/update-event.dto';
+import { EventEntity } from './entities/event.entity';
 import { EventService } from './event.service';
+import { ListsEvents } from './input/list.events';
+import { PaginatorResult } from 'src/models/paginator.model';
+import { DeleteResult } from 'typeorm';
 
+  //TODO refactor it
 @Controller('/events')
 export class EventsController {
+  private readonly logger = new Logger(EventsController.name);
   constructor(private readonly eventService: EventService) {}
 
   @Get()
-  findAll() {
-    return this.eventService.findAllEvents();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async findAll(
+    @Query() filter: ListsEvents,
+  ): Promise<PaginatorResult<EventEntity>> {
+    this.logger.log(`Hit the findAll route`, filter);
+    const events =
+      await this.eventService.getEventsWithAttendeeCountFilteredPaginated(
+        filter,
+        {
+          total: true,
+          currentPage: filter.page,
+          limit: 2,
+        },
+      );
+    this.logger.debug(`Found ${events.data.length} events`);
+    return events;
   }
 
   @Get('/practice') //TODO remove later, is using for dev testing
   async practice() {
     return this.eventService.practice();
   }
+  @Get('/test/:id') //TODO remove later, is using for dev testing
+  async practice2(@Param('id', ParseIntPipe) id: number) {
+    return this.eventService.practice2(id);
+  }
+
+  @Get('att')
+  async getAttendee() {
+    return this.eventService.fetchAttendee();
+  }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<EventEntity> {
-    return this.eventService.findEvent(+id);
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<EventEntity> {
+    return this.eventService.findEvent(id);
   }
 
   @Post()
@@ -43,13 +76,18 @@ export class EventsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() input: UpdateEventDto) {
-    return this.eventService.updateEvent(+id, input);
+  update(@Param('id') id: number, @Body() input: UpdateEventDto) {
+    return this.eventService.updateEvent(id, input);
   }
 
   @Delete(':id')
-  @HttpCode(204)
-  remove(@Param('id') id: string) {
-    this.eventService.removeEvent(+id);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
+    const result = await this.eventService.removeEvent(id);
+
+    if (result?.affected !== 1) {
+      throw new NotFoundException();
+    }
+
+    return result;
   }
 }
