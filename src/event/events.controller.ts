@@ -76,18 +76,21 @@ export class EventsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() input: UpdateEventDto) {
-    return this.eventService.updateEvent(id, input);
+  @UseGuards(AuthGuardJwt)
+  update(
+    @Param('id') id: number,
+    @Body() input: UpdateEventDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.eventService.updateEvent(id, input, user);
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
-    const result = await this.eventService.removeEvent(id);
-
-    if (result?.affected !== 1) {
-      throw new NotFoundException();
-    }
-
-    return result;
+  @UseGuards(AuthGuardJwt)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ): Promise<DeleteResult> {
+    return this.eventService.removeEvent(id, user);
   }
 }

@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeleteResult,
@@ -28,7 +33,7 @@ export class EventService {
     private attendeeService: AttendeeService,
   ) {}
 
-  private getEventtsBaseQuery() {
+  private getEventsBaseQuery() {
     return this.eventRepository.createQueryBuilder('e').orderBy('e.id', 'DESC');
   }
 
@@ -76,23 +81,25 @@ export class EventService {
   }
 
   async findEvent(id: number): Promise<EventEntity> {
-    const event = this.getEventsWithAttendeeCountQuery().andWhere(
+    const eventQuery = this.getEventsWithAttendeeCountQuery().andWhere(
       'e.id = :id',
       { id },
     );
 
-    this.logger.debug(event.getSql());
+    const event = await eventQuery.getOne();
+
+    this.logger.debug(eventQuery.getSql());
 
     if (!event) {
       throw new NotFoundException();
     }
 
-    return await event.getOne();
+    return event;
   }
 
   //TODO refactor it
   getEventsWithAttendeeCountQuery() {
-    return this.getEventtsBaseQuery()
+    return this.getEventsBaseQuery()
       .loadRelationCountAndMap('e.attendeeCount', 'e.attendees')
       .loadRelationCountAndMap(
         'e.attendeeAccepted',
@@ -189,21 +196,44 @@ export class EventService {
   async updateEvent(
     id: number,
     updateMenuDto: UpdateEventDto,
+    user: User,
   ): Promise<EventEntity> {
     const event = await this.eventRepository.findOne({ where: { id: id } });
     if (!event) {
       throw new NotFoundException();
     }
 
+    if (event.organizerId !== user.id) {
+      throw new ForbiddenException(
+        null,
+        'You are not authorized to change this event',
+      );
+    }
+
     Object.assign(event, updateMenuDto);
     return await this.eventRepository.save(event);
   }
 
-  async removeEvent(id: number): Promise<DeleteResult> {
-    return await this.eventRepository
+  async removeEvent(id: number, user: User): Promise<DeleteResult> {
+    const event = await this.eventRepository.findOne({ where: { id } });
+
+    if (!event) {
+      throw new NotFoundException();
+    }
+
+    if (event.organizerId !== user.id) {
+      throw new ForbiddenException(
+        null,
+        'You are not authorized to delete this event',
+      );
+    }
+
+    const deleteResult = await this.eventRepository
       .createQueryBuilder('e')
       .delete()
       .where('id = :id', { id })
       .execute();
+
+    return deleteResult;
   }
 }
