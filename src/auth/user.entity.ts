@@ -9,6 +9,7 @@ import {
 import { Profile } from './profile.entity';
 import { CreateUserDto } from './input/create-user-dto';
 import { EventEntity } from 'src/event/entities/event.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -19,6 +20,7 @@ export class User {
   username: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column({ unique: true })
@@ -37,13 +39,7 @@ export class User {
   @OneToMany(() => EventEntity, (event) => event.organizer)
   organized: EventEntity[];
 
-  constructor(userDto?: CreateUserDto) {
-    if (userDto) {
-      this.username = userDto.username;
-      this.email = userDto.email;
-      this.firstName = userDto.firstName;
-      this.lastName = userDto.lastName;
-      this.password = userDto.password;
-    }
+  constructor(user: Omit<CreateUserDto, 'retypePassword'>) {
+    Object.assign(this, user);
   }
 }

@@ -3,13 +3,16 @@ import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { Attendee } from './attendee.entity';
 import { AttendeeAnswer } from 'src/enums/attendee-answer.enum';
 import { User } from 'src/auth/user.entity';
+import { Expose } from 'class-transformer';
 
 @Entity('event', { name: 'event' })
 export class EventEntity extends ContentDB {
   @Column({ name: 'address', nullable: false })
+  @Expose()
   address: string;
 
   @Column({ name: 'when', type: 'date', nullable: true })
+  @Expose()
   when: Date;
 
   @OneToMany(() => Attendee, (attendees) => attendees.event)

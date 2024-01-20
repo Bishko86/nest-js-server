@@ -1,16 +1,18 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Logger,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  SerializeOptions,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -27,12 +29,14 @@ import { AuthGuardJwt } from 'src/auth/guards/auth-guard-jwt';
 
 //TODO refactor it
 @Controller('/events')
+@SerializeOptions({ strategy: 'excludeAll' })
 export class EventsController {
   private readonly logger = new Logger(EventsController.name);
   constructor(private readonly eventService: EventService) {}
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
+  @UseInterceptors(ClassSerializerInterceptor)
   async findAll(
     @Query() filter: ListsEvents,
   ): Promise<PaginatorResult<EventEntity>> {
@@ -65,6 +69,7 @@ export class EventsController {
   }
 
   @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   findOne(@Param('id', ParseIntPipe) id: number): Promise<EventEntity> {
     return this.eventService.findEvent(id);
   }
