@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -20,8 +21,11 @@ import { EventService } from './event.service';
 import { ListsEvents } from './input/list.events';
 import { PaginatorResult } from 'src/models/paginator.model';
 import { DeleteResult } from 'typeorm';
+import { CurrentUser } from 'src/decorators/current-user.decorator';
+import { User } from 'src/auth/user.entity';
+import { AuthGuardJwt } from 'src/auth/guards/auth-guard-jwt';
 
-  //TODO refactor it
+//TODO refactor it
 @Controller('/events')
 export class EventsController {
   private readonly logger = new Logger(EventsController.name);
@@ -66,13 +70,9 @@ export class EventsController {
   }
 
   @Post()
-  create(@Body() input: CreateEventDto) {
-    const event = {
-      ...input,
-      when: new Date(input.when),
-    };
-
-    return this.eventService.createEvent(event);
+  @UseGuards(AuthGuardJwt)
+  create(@Body() input: CreateEventDto, @CurrentUser() user: User) {
+    return this.eventService.createEvent(input, user);
   }
 
   @Patch(':id')

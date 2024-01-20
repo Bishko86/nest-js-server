@@ -2,11 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Profile } from './profile.entity';
 import { CreateUserDto } from './input/create-user-dto';
+import { EventEntity } from 'src/event/entities/event.entity';
 
 @Entity()
 export class User {
@@ -31,6 +33,9 @@ export class User {
   @OneToOne(() => Profile)
   @JoinColumn()
   profile: Profile;
+
+  @OneToMany(() => EventEntity, (event) => event.organizer)
+  organized: EventEntity[];
 
   constructor(userDto?: CreateUserDto) {
     if (userDto) {

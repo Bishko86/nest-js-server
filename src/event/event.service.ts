@@ -17,6 +17,7 @@ import { ListsEvents } from './input/list.events';
 import { WhenEventFilter } from 'src/enums/when-event.enum';
 import { PaginatorOptions, PaginatorResult } from 'src/models/paginator.model';
 import { paginate } from 'src/pagination/paginator';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class EventService {
@@ -172,8 +173,16 @@ export class EventService {
     );
   }
 
-  async createEvent(event: CreateEventDto): Promise<EventEntity> {
-    const eventDto = this.eventRepository.create(event);
+  async createEvent(
+    event: CreateEventDto,
+    organizer: User,
+  ): Promise<EventEntity> {
+    const eventDto = this.eventRepository.create({
+      ...event,
+      organizer,
+      when: new Date(event.when),
+    });
+
     return await this.eventRepository.save(eventDto);
   }
 

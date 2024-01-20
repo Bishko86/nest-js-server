@@ -1,7 +1,8 @@
 import { ContentDB } from 'src/shared/shared-entities';
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { Attendee } from './attendee.entity';
 import { AttendeeAnswer } from 'src/enums/attendee-answer.enum';
+import { User } from 'src/auth/user.entity';
 
 @Entity('event', { name: 'event' })
 export class EventEntity extends ContentDB {
@@ -13,6 +14,13 @@ export class EventEntity extends ContentDB {
 
   @OneToMany(() => Attendee, (attendees) => attendees.event)
   attendees: Attendee[];
+
+  @ManyToOne(() => User, (user) => user.organized)
+  @JoinColumn({ name: 'organizerId' })
+  organizer: User;
+
+  @Column({ nullable: true })
+  organizerId: number;
 
   attendeeCount?: number;
   attendeeDeclined?: AttendeeAnswer;
