@@ -20,6 +20,7 @@ export class EventEntity extends ContentDB {
 
   @ManyToOne(() => User, (user) => user.organized)
   @JoinColumn({ name: 'organizerId' })
+  @Expose()
   organizer: User;
 
   @Column({ nullable: true })
@@ -29,4 +30,11 @@ export class EventEntity extends ContentDB {
   attendeeDeclined?: AttendeeAnswer;
   attendeePending?: AttendeeAnswer;
   attendeeAccepted?: AttendeeAnswer;
+
+  constructor(partial?: Partial<EventEntity>) {
+    super();
+    if (partial) {
+      Object.assign(this, partial);
+    }
+  }
 }

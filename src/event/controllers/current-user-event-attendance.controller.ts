@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  DefaultValuePipe,
   Get,
   NotFoundException,
   Param,
@@ -31,7 +32,7 @@ export class CurrentUserEventAttendanceController {
   @Get()
   async findAll(
     @CurrentUser() user: User,
-    @Query('page') page = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
   ): Promise<PaginatorResult<EventEntity>> {
     return await this.eventService.getEventsAttendedByUserIdPaginated(user.id, {
       limit: 6,
@@ -39,7 +40,7 @@ export class CurrentUserEventAttendanceController {
     });
   }
 
-  @Get(':/eventId')
+  @Get(':eventId')
   @UseGuards(AuthGuardJwt)
   @UseInterceptors(ClassSerializerInterceptor)
   async findOne(

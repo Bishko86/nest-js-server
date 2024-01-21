@@ -27,14 +27,14 @@ export class EventService {
     private attendeeService: AttendeeService,
   ) {}
 
-  private getEventsBaseQuery() {
+  private getEventsBaseQuery(): SelectQueryBuilder<EventEntity> {
     return this.eventRepository.createQueryBuilder('e').orderBy('e.id', 'DESC');
   }
 
   private getEventsOrganizedByUserIdQuery(
     userId: number,
   ): SelectQueryBuilder<EventEntity> {
-    return this.getEventsBaseQuery().where('e.organazerId = :userId', {
+    return this.getEventsBaseQuery().where('e.organizerId = :userId', {
       userId,
     });
   }
@@ -55,7 +55,7 @@ export class EventService {
     return this.attendeeService.getAttendee();
   }
 
-  async findEvent(id: number): Promise<EventEntity> {
+  async getEventWithAttendeeCout(id: number): Promise<EventEntity> {
     const eventQuery = this.getEventsWithAttendeeCountQuery().andWhere(
       'e.id = :id',
       { id },
@@ -70,6 +70,10 @@ export class EventService {
     }
 
     return event;
+  }
+
+  async findOne(id: number): Promise<EventEntity | undefined> {
+    return await this.eventRepository.findOne({ where: { id } });
   }
 
   //TODO refactor it
@@ -106,7 +110,7 @@ export class EventService {
   }
 
   //TODO refactor it
-  private async getEventsWithAttendeeCountFiltered(
+  private async getEventsWithAttendeeCountFilteredQuery(
     filter?: ListsEvents,
   ): Promise<SelectQueryBuilder<EventEntity>> {
     let query = this.getEventsWithAttendeeCountQuery();
@@ -150,7 +154,7 @@ export class EventService {
     paginateOptions: PaginatorOptions,
   ): Promise<PaginatorResult<EventEntity>> {
     return await paginate(
-      await this.getEventsWithAttendeeCountFiltered(filter),
+      await this.getEventsWithAttendeeCountFilteredQuery(filter),
       paginateOptions,
     );
   }
@@ -159,11 +163,13 @@ export class EventService {
     event: CreateEventDto,
     organizer: User,
   ): Promise<EventEntity> {
-    const eventDto = this.eventRepository.create({
-      ...event,
-      organizer,
-      when: new Date(event.when),
-    });
+    const eventDto = this.eventRepository.create(
+      new EventEntity({
+        ...event,
+        organizer,
+        when: new Date(event.when),
+      }),
+    );
 
     return await this.eventRepository.save(eventDto);
   }
@@ -173,7 +179,8 @@ export class EventService {
     updateMenuDto: UpdateEventDto,
     user: User,
   ): Promise<EventEntity> {
-    const event = await this.eventRepository.findOne({ where: { id: id } });
+    const event = await this.findOne(id);
+
     if (!event) {
       throw new NotFoundException();
     }
@@ -185,12 +192,12 @@ export class EventService {
       );
     }
 
-    Object.assign(event, updateMenuDto);
-    return await this.eventRepository.save(event);
+    const eventPayload = new EventEntity(Object.assign(event, updateMenuDto));
+    return await this.eventRepository.save(eventPayload);
   }
 
   async removeEvent(id: number, user: User): Promise<DeleteResult> {
-    const event = await this.eventRepository.findOne({ where: { id } });
+    const event = await this.findOne(id);
 
     if (!event) {
       throw new NotFoundException();

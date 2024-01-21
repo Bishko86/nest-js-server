@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { Menu } from './menu.entity';
@@ -22,7 +23,7 @@ export class MenuController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Menu> {
+  findOne(@Param('id', ParseIntPipe) id: string): Promise<Menu> {
     return this.menuService.findOne(+id);
   }
 
@@ -33,14 +34,14 @@ export class MenuController {
 
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updateMenuDto: UpdateMenuDto,
   ): Promise<Menu> {
     return this.menuService.update(+id, updateMenuDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.menuService.remove(+id);
   }
 }

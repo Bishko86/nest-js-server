@@ -48,6 +48,8 @@ export class UsersController {
     const user = new User(cloneUserDto);
     const token = this.authService.getTokenForUser(user);
 
+    await this.usersService.saveUser(user);
+
     return new CreateUserResponse(cloneUserDto, token);
   }
 }

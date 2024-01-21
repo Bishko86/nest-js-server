@@ -53,19 +53,21 @@ export class EventsController {
   @Get(':id')
   @UseInterceptors(ClassSerializerInterceptor)
   findOne(@Param('id', ParseIntPipe) id: number): Promise<EventEntity> {
-    return this.eventService.findEvent(id);
+    return this.eventService.getEventWithAttendeeCout(id);
   }
 
   @Post()
   @UseGuards(AuthGuardJwt)
+  @UseInterceptors(ClassSerializerInterceptor)
   create(@Body() input: CreateEventDto, @CurrentUser() user: User) {
     return this.eventService.createEvent(input, user);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuardJwt)
+  @UseInterceptors(ClassSerializerInterceptor)
   update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() input: UpdateEventDto,
     @CurrentUser() user: User,
   ) {
