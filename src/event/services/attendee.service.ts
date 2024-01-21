@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Attendee } from '../entities/attendee.entity';
 import { Repository } from 'typeorm';
 import { CreateAttendeeDto } from '../input/create-attendee.dto';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class AttendeeService {
@@ -40,11 +41,15 @@ export class AttendeeService {
   async createOrUpdate(
     input: CreateAttendeeDto,
     eventId: number,
-    userId: number,
+    user: User,
   ): Promise<Attendee> {
     const attendee =
-      (await this.findOneByEventIdAndUserId(eventId, userId)) ??
-      new Attendee(eventId, userId, input);
+      (await this.findOneByEventIdAndUserId(eventId, user.id)) ??
+      new Attendee(eventId, {
+        ...input,
+        name: user.username,
+        user: user,
+      });
 
     return this.attendeeRepository.save(attendee);
   }

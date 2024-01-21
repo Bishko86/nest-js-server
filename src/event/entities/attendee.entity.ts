@@ -17,12 +17,13 @@ export class Attendee {
   @Expose()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   @Expose()
   name: string;
 
   @ManyToOne(() => EventEntity, (eventEntity) => eventEntity.attendees, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   @Expose()
@@ -34,6 +35,7 @@ export class Attendee {
   @Column({
     type: 'text',
     default: AttendeeAnswer.Accepted,
+    nullable: true,
   })
   @Expose()
   answer: AttendeeAnswer;
@@ -44,10 +46,10 @@ export class Attendee {
   @Expose()
   userId: number;
 
-  constructor(eventId?: number, userId?: number, input?: CreateAttendeeDto) {
-    if (eventId && userId && input) {
+  constructor(eventId?: number, input?: CreateAttendeeDto) {
+    if (eventId && input) {
       this.eventId = eventId;
-      this.userId = userId;
+      this.userId = input.user.id;
       this.name = input.name;
       this.event = input.event;
       this.answer = input.answer;

@@ -59,7 +59,7 @@ export class CurrentUserEventAttendanceController {
     return attendee;
   }
 
-  @Put(':/eventId')
+  @Put(':eventId')
   @UseGuards(AuthGuardJwt)
   @UseInterceptors(ClassSerializerInterceptor)
   async createOrUpdate(
@@ -67,6 +67,6 @@ export class CurrentUserEventAttendanceController {
     @Body() input: CreateAttendeeDto,
     @CurrentUser() user: User,
   ): Promise<Attendee> {
-    return this.attendeeService.createOrUpdate(input, eventId, user.id);
+    return this.attendeeService.createOrUpdate(input, eventId, user);
   }
 }
