@@ -5,20 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  DeleteResult,
-  Like,
-  MoreThan,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
-import { EventEntity } from './entities/event.entity';
-import { CreateEventDto } from './input/create-event.dto';
-import { UpdateEventDto } from './input/update-event.dto';
+import { DeleteResult, Repository, SelectQueryBuilder } from 'typeorm';
+import { EventEntity } from '../entities/event.entity';
+import { CreateEventDto } from '../input/create-event.dto';
+import { UpdateEventDto } from '../input/update-event.dto';
 import { AttendeeService } from './attendee.service';
-import { Attendee } from './entities/attendee.entity';
+import { Attendee } from '../entities/attendee.entity';
 import { AttendeeAnswer } from 'src/enums/attendee-answer.enum';
-import { ListsEvents } from './input/list.events';
+import { ListsEvents } from '../input/list.events';
 import { WhenEventFilter } from 'src/enums/when-event.enum';
 import { PaginatorOptions, PaginatorResult } from 'src/models/paginator.model';
 import { paginate } from 'src/pagination/paginator';
@@ -37,47 +31,28 @@ export class EventService {
     return this.eventRepository.createQueryBuilder('e').orderBy('e.id', 'DESC');
   }
 
+  private getEventsOrganizedByUserIdQuery(
+    userId: number,
+  ): SelectQueryBuilder<EventEntity> {
+    return this.getEventsBaseQuery().where('e.organazerId = :userId', {
+      userId,
+    });
+  }
+
+  private getEventsAttendedByUserIdQuery(
+    userId: number,
+  ): SelectQueryBuilder<EventEntity> {
+    return this.getEventsBaseQuery()
+      .leftJoinAndSelect('e.attendees', 'a')
+      .where('a.userId = :userId', { userId });
+  }
+
   async findAllEvents(): Promise<EventEntity[]> {
     return this.eventRepository.find();
   }
 
   async fetchAttendee(): Promise<Attendee[]> {
     return this.attendeeService.getAttendee();
-  }
-
-  //TODO remove later, is using for testing
-  async practice2(id: number) {
-    const event = await this.eventRepository.findOne({
-      where: { id: id },
-      relations: ['attendees'],
-    });
-
-    const attendee = new Attendee();
-    attendee.name = 'Maria';
-    attendee.event = event;
-    event.attendees.push(attendee);
-    // await this.attendeeService.addAttendee(attendee);
-    return this.eventRepository.save(event);
-  }
-
-  //TODO remove later, is using for testing
-  async practice() {
-    return await this.eventRepository.find({
-      select: ['id', 'when'],
-      where: [
-        {
-          id: MoreThan(3),
-          when: MoreThan(new Date('2021-02-17T13:00:00')),
-        },
-        {
-          description: Like('%Bishko%'),
-        },
-      ],
-      take: 3,
-      order: {
-        id: 'DESC',
-      },
-    });
   }
 
   async findEvent(id: number): Promise<EventEntity> {
@@ -235,5 +210,25 @@ export class EventService {
       .execute();
 
     return deleteResult;
+  }
+
+  async getEventsOrganizedByUserIdPaginated(
+    userId: number,
+    paginateOptions: PaginatorOptions,
+  ): Promise<PaginatorResult<EventEntity>> {
+    return await paginate<EventEntity>(
+      this.getEventsOrganizedByUserIdQuery(userId),
+      paginateOptions,
+    );
+  }
+
+  async getEventsAttendedByUserIdPaginated(
+    userId: number,
+    paginateOptions: PaginatorOptions,
+  ): Promise<PaginatorResult<EventEntity>> {
+    return await paginate<EventEntity>(
+      this.getEventsAttendedByUserIdQuery(userId),
+      paginateOptions,
+    );
   }
 }
