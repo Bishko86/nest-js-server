@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'src/app.module';
 import * as request from 'supertest';
-import { Connection } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { User } from 'src/auth/user.entity';
 import {
   loadFixtures as loadFixturesBase,
@@ -11,7 +11,7 @@ import {
 
 let app: INestApplication;
 let mod: TestingModule;
-let connection: Connection;
+let connection: DataSource;
 
 const loadFixture = async (sqlFileName: string) =>
   loadFixturesBase(connection, sqlFileName);
@@ -33,7 +33,7 @@ describe('Events (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
 
-    connection = app.get(Connection);
+    connection = app.get(DataSource);
   });
 
   afterEach(async () => {
