@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { EventService } from '../services/event.service';
 
-@Controller('events-organized-by-user')
+@Controller('events-organized-by-user/:userId')
 @SerializeOptions({ strategy: 'excludeAll' })
 export class EventsOrganizedByUserController {
   constructor(private readonly eventService: EventService) {}

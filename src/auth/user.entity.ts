@@ -50,7 +50,7 @@ export class User {
   @Expose()
   attennded: Attendee[];
 
-  constructor(user?: Omit<CreateUserDto, 'retypePassword'>) {
+  constructor(user?: Partial<Omit<CreateUserDto, 'retypePassword'>>) {
     if (user) {
       Object.assign(this, user);
     }
