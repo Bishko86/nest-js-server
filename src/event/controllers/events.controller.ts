@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Patch,
@@ -76,6 +77,7 @@ export class EventsController {
 
   @Delete(':id')
   @UseGuards(AuthGuardJwt)
+  @HttpCode(204)
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,

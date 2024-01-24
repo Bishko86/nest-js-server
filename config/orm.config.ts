@@ -16,5 +16,6 @@ export default registerAs(
     database: process.env.DB_NAME,
     synchronize: true,
     entities: [Menu, EventEntity, Attendee, Subject, Teacher, User, Profile],
+    dropSchema: Boolean(parseInt(process.env.DB_DROP_SCHEMA)),
   }),
 );
