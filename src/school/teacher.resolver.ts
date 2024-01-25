@@ -14,6 +14,7 @@ import { TeacherAddInput } from './input/teacher-add.input';
 import { Logger } from '@nestjs/common';
 import { Subject } from './subject.entity';
 import { TeacherEditInput } from './input/teacher-edit.input';
+import { EntityWithId } from './school.types';
 
 @Resolver(() => Teacher)
 export class TeacherResolver {
@@ -55,6 +56,19 @@ export class TeacherResolver {
     return await this.teachersRepository.save(
       new Teacher(Object.assign(teacher, input)),
     );
+  }
+
+  @Mutation(() => EntityWithId, { name: 'teacherDelete' })
+  async delete(
+    @Args('id', { type: () => Int }) id: number,
+  ): Promise<EntityWithId> {
+    const teacher = await this.teachersRepository.findOneOrFail({
+      where: { id },
+    });
+
+    await this.teachersRepository.remove(teacher);
+
+    return new EntityWithId(id);
   }
 
   @ResolveField('subjects')
