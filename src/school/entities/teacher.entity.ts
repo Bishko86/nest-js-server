@@ -1,7 +1,14 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Subject } from './subject.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Gender } from './school.types';
+import { Gender } from '../school.types';
+import { Course } from './course.entity';
 
 @Entity()
 @ObjectType()
@@ -28,4 +35,8 @@ export class Teacher {
   @ManyToMany(() => Subject, (subject) => subject.teachers)
   @Field(() => [Subject])
   subjects: Promise<Subject[]>;
+
+  @OneToMany(() => Course, (course) => course.teacher)
+  @Field(() => [Course])
+  courses: Promise<Course[]>;
 }

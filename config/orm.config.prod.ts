@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { EventEntity } from 'src/event/entities/event.entity';
 import { Menu } from 'src/menu/menu.entity';
 import { DBType } from 'src/models/db-type.model';
-import { Teacher } from 'src/school/teacher.entity';
+import { Teacher } from 'src/school/entities/teacher.entity';
 
 export default registerAs(
   'orm.config',
