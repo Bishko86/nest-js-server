@@ -17,7 +17,7 @@ import { AttendeeService } from '../services/attendee.service';
 import { CreateAttendeeDto } from '../input/create-attendee.dto';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { AuthGuardJwt } from 'src/auth/guards/auth-guard-jwt';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { Attendee } from '../entities/attendee.entity';
 import { PaginatorResult } from 'src/models/paginator.model';
 import { EventEntity } from '../entities/event.entity';

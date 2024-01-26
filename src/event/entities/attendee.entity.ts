@@ -8,7 +8,7 @@ import {
 import { EventEntity } from './event.entity';
 import { AttendeeAnswer } from 'src/enums/attendee-answer.enum';
 import { Expose } from 'class-transformer';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { CreateAttendeeDto } from '../input/create-attendee.dto';
 
 @Entity('attendees', { name: 'attendees' })

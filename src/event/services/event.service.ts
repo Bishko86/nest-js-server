@@ -16,7 +16,7 @@ import { ListsEvents } from '../input/list.events';
 import { WhenEventFilter } from 'src/enums/when-event.enum';
 import { PaginatorOptions, PaginatorResult } from 'src/models/paginator.model';
 import { paginate } from 'src/pagination/paginator';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class EventService {

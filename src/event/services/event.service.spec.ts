@@ -3,7 +3,7 @@ import { EventService } from './event.service';
 import { EventEntity } from '../entities/event.entity';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { AttendeeService } from './attendee.service';
 import { NotFoundException } from '@nestjs/common';
 import * as pagiator from '../../pagination/paginator';

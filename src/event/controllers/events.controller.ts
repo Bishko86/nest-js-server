@@ -24,7 +24,7 @@ import { ListsEvents } from '../input/list.events';
 import { PaginatorResult } from 'src/models/paginator.model';
 import { DeleteResult } from 'typeorm';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { AuthGuardJwt } from 'src/auth/guards/auth-guard-jwt';
 
 @Controller('/events')

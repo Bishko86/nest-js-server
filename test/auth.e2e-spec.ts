@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AppModule } from './../src/app.module';
-import { User } from './../src/auth/user.entity';
+import { User } from '../src/auth/entities/user.entity';
 import {
   loadFixtures as loadFixturesBase,
   tokenForUser as tokenForUserBase,

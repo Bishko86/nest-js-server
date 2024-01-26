@@ -1,7 +1,7 @@
 import { IsEnum } from 'class-validator';
 import { AttendeeAnswer } from 'src/enums/attendee-answer.enum';
 import { EventEntity } from '../entities/event.entity';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 export class CreateAttendeeDto {
   @IsEnum(AttendeeAnswer)
