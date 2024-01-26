@@ -18,10 +18,9 @@ import {
 } from '@nestjs/common';
 import { CreateEventDto } from '../input/create-event.dto';
 import { UpdateEventDto } from '../input/update-event.dto';
-import { EventEntity } from '../entities/event.entity';
+import { EventEntity, PaginatedEvents } from '../entities/event.entity';
 import { EventService } from '../services/event.service';
 import { ListsEvents } from '../input/list.events';
-import { PaginatorResult } from 'src/models/paginator.model';
 import { DeleteResult } from 'typeorm';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
@@ -35,9 +34,7 @@ export class EventsController {
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
-  async findAll(
-    @Query() filter: ListsEvents,
-  ): Promise<PaginatorResult<EventEntity>> {
+  async findAll(@Query() filter: ListsEvents): Promise<PaginatedEvents> {
     const events =
       await this.eventService.getEventsWithAttendeeCountFilteredPaginated(
         filter,

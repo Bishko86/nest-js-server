@@ -1,4 +1,7 @@
+import { Type } from '@nestjs/common';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Expose } from 'class-transformer';
+import { EventEntity } from 'src/event/entities/event.entity';
 
 export interface PaginatorOptions {
   limit: number;
@@ -6,19 +9,33 @@ export interface PaginatorOptions {
   total?: boolean;
 }
 
-export class PaginatorResult<T> {
-  @Expose()
-  first: number;
-  @Expose()
-  last: number;
-  @Expose()
-  limit: number;
-  @Expose()
-  total?: number;
-  @Expose()
-  data: T[];
+export function Paginated<T>(classRef: Type<T>) {
+  @ObjectType()
+  class PaginatorResult<T> {
+    @Expose()
+    @Field({ nullable: true })
+    first: number;
 
-  constructor(partial: Partial<PaginatorResult<T>>) {
-    Object.assign(this, partial);
+    @Expose()
+    @Field({ nullable: true })
+    last: number;
+
+    @Expose()
+    @Field({ nullable: true })
+    limit: number;
+
+    @Expose()
+    @Field({ nullable: true })
+    total?: number;
+
+    @Expose()
+    @Field(() => [classRef], { nullable: true })
+    data: T[];
+
+    constructor(partial: Partial<PaginatorResult<T>>) {
+      Object.assign(this, partial);
+    }
   }
+
+  return PaginatorResult<T>;
 }
