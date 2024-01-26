@@ -1,11 +1,22 @@
 import { Type } from '@nestjs/common';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Expose } from 'class-transformer';
-import { EventEntity } from 'src/event/entities/event.entity';
 
 export interface PaginatorOptions {
   limit: number;
   currentPage: number;
+  total?: boolean;
+}
+
+@InputType('paginatorOptions')
+export class PaginatorInputOptions implements PaginatorOptions {
+  @Field({ nullable: true })
+  limit: number;
+
+  @Field({ nullable: true })
+  currentPage: number;
+
+  @Field({ nullable: true })
   total?: boolean;
 }
 
