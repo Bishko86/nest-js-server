@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, SelectQueryBuilder } from 'typeorm';
-import { EventEntity } from '../entities/event.entity';
+import { EventEntity, PaginatedEvents } from '../entities/event.entity';
 import { CreateEventDto } from '../input/create-event.dto';
 import { UpdateEventDto } from '../input/update-event.dto';
 import { AttendeeService } from './attendee.service';
@@ -14,9 +14,9 @@ import { Attendee } from '../entities/attendee.entity';
 import { AttendeeAnswer } from 'src/enums/attendee-answer.enum';
 import { ListsEvents } from '../input/list.events';
 import { WhenEventFilter } from 'src/enums/when-event.enum';
-import { PaginatorOptions, PaginatorResult } from 'src/models/paginator.model';
+import { PaginatorOptions } from 'src/models/paginator.model';
 import { paginate } from 'src/pagination/paginator';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class EventService {
@@ -152,9 +152,10 @@ export class EventService {
   async getEventsWithAttendeeCountFilteredPaginated(
     filter: ListsEvents,
     paginateOptions: PaginatorOptions,
-  ): Promise<PaginatorResult<EventEntity>> {
+  ): Promise<PaginatedEvents> {
     return await paginate(
       await this.getEventsWithAttendeeCountFilteredQuery(filter),
+      PaginatedEvents,
       paginateOptions,
     );
   }
@@ -222,9 +223,10 @@ export class EventService {
   async getEventsOrganizedByUserIdPaginated(
     userId: number,
     paginateOptions: PaginatorOptions,
-  ): Promise<PaginatorResult<EventEntity>> {
-    return await paginate<EventEntity>(
+  ): Promise<PaginatedEvents> {
+    return await paginate<EventEntity, PaginatedEvents>(
       this.getEventsOrganizedByUserIdQuery(userId),
+      PaginatedEvents,
       paginateOptions,
     );
   }
@@ -232,9 +234,10 @@ export class EventService {
   async getEventsAttendedByUserIdPaginated(
     userId: number,
     paginateOptions: PaginatorOptions,
-  ): Promise<PaginatorResult<EventEntity>> {
-    return await paginate<EventEntity>(
+  ): Promise<PaginatedEvents> {
+    return await paginate<EventEntity, PaginatedEvents>(
       this.getEventsAttendedByUserIdQuery(userId),
+      PaginatedEvents,
       paginateOptions,
     );
   }

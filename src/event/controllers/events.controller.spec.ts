@@ -5,7 +5,7 @@ import { EventEntity } from '../entities/event.entity';
 import { AttendeeService } from '../services/attendee.service';
 import { ListsEvents } from '../input/list.events';
 import { PaginatorResult } from 'src/models/paginator.model';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 describe('EventsController', () => {
   let eventsController: EventsController;

@@ -2,8 +2,8 @@ import { INestApplication } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DataSource } from 'typeorm';
-import { AuthService } from './../src/auth/auth.service';
-import { User } from './../src/auth/user.entity';
+import { AuthService } from '../src/auth/services/auth.service';
+import { User } from '../src/auth/entities/user.entity';
 
 export const tokenForUser = (
   app: INestApplication,

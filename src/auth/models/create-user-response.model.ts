@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { User } from '../user.entity';
+import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../input/create-user-dto';
 
 export class CreateUserResponse extends User {

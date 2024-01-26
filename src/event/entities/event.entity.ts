@@ -2,8 +2,9 @@ import { ContentDB } from 'src/shared/shared-entities';
 import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { Attendee } from './attendee.entity';
 import { AttendeeAnswer } from 'src/enums/attendee-answer.enum';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { Expose } from 'class-transformer';
+import { Paginated } from 'src/models/paginator.model';
 
 @Entity('event', { name: 'event' })
 export class EventEntity extends ContentDB {
@@ -38,3 +39,5 @@ export class EventEntity extends ContentDB {
     }
   }
 }
+
+export class PaginatedEvents extends Paginated<EventEntity>(EventEntity) {}

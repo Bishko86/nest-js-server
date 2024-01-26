@@ -17,10 +17,9 @@ import { AttendeeService } from '../services/attendee.service';
 import { CreateAttendeeDto } from '../input/create-attendee.dto';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { AuthGuardJwt } from 'src/auth/guards/auth-guard-jwt';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { Attendee } from '../entities/attendee.entity';
-import { PaginatorResult } from 'src/models/paginator.model';
-import { EventEntity } from '../entities/event.entity';
+import { PaginatedEvents } from '../entities/event.entity';
 
 @Controller('events-attendance')
 export class CurrentUserEventAttendanceController {
@@ -33,7 +32,7 @@ export class CurrentUserEventAttendanceController {
   async findAll(
     @CurrentUser() user: User,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-  ): Promise<PaginatorResult<EventEntity>> {
+  ): Promise<PaginatedEvents> {
     return await this.eventService.getEventsAttendedByUserIdPaginated(user.id, {
       limit: 6,
       currentPage: page,

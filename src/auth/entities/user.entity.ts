@@ -7,34 +7,41 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Profile } from './profile.entity';
-import { CreateUserDto } from './input/create-user-dto';
 import { EventEntity } from 'src/event/entities/event.entity';
 import { Exclude, Expose } from 'class-transformer';
 import { Attendee } from 'src/event/entities/attendee.entity';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @Entity()
+@ObjectType()
 export class User {
   @PrimaryGeneratedColumn()
   @Expose()
+  @Field(() => Int)
   id: number;
 
   @Column({ unique: true })
   @Expose()
+  @Field()
   username: string;
 
   @Column()
   @Exclude()
+  @Field()
   password: string;
 
   @Column({ unique: true })
   @Expose()
+  @Field()
   email: string;
 
   @Column()
+  @Field()
   firstName: string;
 
   @Column()
   @Expose()
+  @Field()
   lastName: string;
 
   @OneToOne(() => Profile)
@@ -50,7 +57,7 @@ export class User {
   @Expose()
   attennded: Attendee[];
 
-  constructor(user?: Partial<Omit<CreateUserDto, 'retypePassword'>>) {
+  constructor(user?: Partial<User>) {
     if (user) {
       Object.assign(this, user);
     }
